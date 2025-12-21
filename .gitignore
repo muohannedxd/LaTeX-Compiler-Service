@@ -1,0 +1,26 @@
+.env
+.env.*
+
+# Python cache and venvs
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+
+# Editors/IDE
+.vscode/
+.idea/
+
+# Build/output artifacts
+output/
+build/
+dist/
+*.egg-info/
+
+# MinIO / app data
+data/
+
+# OS noise
+.DS_Store
+Thumbs.db
