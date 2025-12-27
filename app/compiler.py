@@ -59,7 +59,7 @@ def ensure_bucket():
         client.make_bucket(MINIO_BUCKET, location=MINIO_REGION)
     _bucket_ready = True
 
-def compile_latex(latex_source: str):
+def compile_latex(presentation_id: str, latex_source: str):
     # Input size guard
     if len(latex_source.encode("utf-8")) > MAX_LATEX_BYTES:
         return {
@@ -67,8 +67,10 @@ def compile_latex(latex_source: str):
             "log": f"LaTeX source too large. Limit is {MAX_LATEX_BYTES} bytes."
         }
 
-    build_id = str(uuid.uuid4())
-    build_dir = BUILD_ROOT / build_id
+    build_id = presentation_id
+
+    # Build in a unique temp dir to avoid clashes
+    build_dir = BUILD_ROOT / str(uuid.uuid4())
     build_dir.mkdir(parents=True, exist_ok=True)
 
     tex_file = build_dir / "main.tex"
@@ -107,10 +109,20 @@ def compile_latex(latex_source: str):
         }
 
     object_key = f"{build_id}.pdf"
+    overwritten = False
 
     try:
         ensure_bucket()
         client = get_minio_client()
+        try:
+            client.stat_object(MINIO_BUCKET, object_key)
+            overwritten = True
+        except S3Error as stat_exc:
+            if stat_exc.code != "NoSuchKey":
+                return {
+                    "success": False,
+                    "log": f"Storage stat failed: {stat_exc}"
+                }
         with pdf_file.open("rb") as file_obj:
             client.put_object(
                 MINIO_BUCKET,
@@ -141,4 +153,5 @@ def compile_latex(latex_source: str):
         "build_id": build_id,
         "object_key": object_key,
         "presigned_url": presigned_url,
+        "overwritten": overwritten,
     }
