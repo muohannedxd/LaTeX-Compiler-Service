@@ -1,13 +1,15 @@
 FROM python:3.11-slim
 
-# Install LaTeX
+# Install LaTeX (full distribution for maximum compatibility)
 RUN apt-get update && \
-    apt-get install -y \
+    apt-get install -y --no-install-recommends \
     texlive-latex-base \
     texlive-latex-recommended \
-    texlive-latex-extra \
     texlive-fonts-recommended \
     texlive-pictures \
+    texlive-science \
+    texlive-bibtex-extra \
+    latexmk \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app

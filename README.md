@@ -1,6 +1,8 @@
 # LaTeX Compiler Service
 
-FastAPI service that compiles LaTeX (Beamer) to PDF, uploads to MinIO (S3-compatible), and serves PDFs via streaming or presigned URLs.
+A service that compiles LaTeX (Beamer) to PDF, uploads to MinIO (S3-compatible), and serves PDFs via streaming or presigned URLs.
+
+> **Psssst note:** simple for now, works for many libraries, update the `Dockerfile` if you want more libraries supported.
 
 ## Quick start (Docker Compose)
 
